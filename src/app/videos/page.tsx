@@ -1,4 +1,5 @@
 "use client";
+import { useYoutubePlayer } from '@/features/YoutubePlayer/hooks';
 import React, { MutableRefObject, useRef, useState } from 'react';
 import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 
@@ -16,60 +17,29 @@ type FocusRange = {
 
 export default function VideoPage() {
     const playerRef = useRef<YouTubePlayer | null>(null);
-    const intervalId = useRef<NodeJS.Timeout | null>(null);
     const [currIndex, setCurrIndex] = useState(0);
     const [focusRange, setFocusRange] = useState<FocusRange | null>(null);
     const [dragRange, setDragRange] = useState<DragRange | null>(null);
 
-    const onReady = (event: YouTubeEvent) => {
-        playerRef.current = event.target;
-    };
-
-
-    const playFromSecond = async (seconds: number) => {
-        if (playerRef.current) {
-            await playerRef.current.seekTo(seconds, true);
-            await playerRef.current.playVideo();
+    const { YoutubePlayer, play } = useYoutubePlayer(
+        "UNP03fDSj1U",
+        (currentTime) => {
+            let nextIndex = currIndex
+            while (nextIndex < Transcripts.length) {
+                const transcript = Transcripts[nextIndex]
+                if (transcript.end < currentTime) {
+                    nextIndex++;
+                    continue
+                }
+                setCurrIndex(nextIndex)
+                break
+            }
         }
-    };
+    )
 
     return (
         <div>
-            <YouTube videoId="UNP03fDSj1U"
-                opts={{
-                    height: '390',
-                    width: '640',
-                    playerVars: {
-                        autoplay: 0
-                    }
-                }}
-                onReady={onReady}
-                onPlay={(e) => {
-                    if (intervalId.current) {
-                        clearInterval(intervalId.current)
-                    }
-                    intervalId.current = setInterval(async () => {
-                        const currTime = await e.target.getCurrentTime()
-
-                        let nextIndex = currIndex
-                        while (nextIndex < Transcripts.length) {
-                            const transcript = Transcripts[nextIndex]
-                            if (transcript.end < currTime) {
-                                nextIndex++;
-                                continue
-                            }
-                            setCurrIndex(nextIndex)
-                            break
-                        }
-                    }, 100)
-                }}
-                onPause={(e) => {
-                    if (!intervalId.current) {
-                        return
-                    }
-                    clearInterval(intervalId.current)
-                }}
-            />
+            {YoutubePlayer()}
             <div>
                 {Transcripts.map((x, index) => {
                     let bgColor = ""
@@ -81,11 +51,12 @@ export default function VideoPage() {
                             : "";
                     return (
                         <button
+                            key={index}
                             className='pr-2'
                             style={{ backgroundColor: bgColor }}
                             onClick={async () => {
                                 setCurrIndex(index)
-                                await playFromSecond(x.start)
+                                await play(x.start)
                             }}
                             onPointerDown={e => {
                                 setFocusRange(null)
@@ -126,7 +97,7 @@ export default function VideoPage() {
                         }
                         const firstWord = Transcripts[focusRange.startIndex]
                         const endWord = Transcripts[focusRange.endIndex]
-                        await playFromSecond(firstWord.start)
+                        await play(firstWord.start)
 
                         const id = setInterval(async () => {
                             const time = await playerRef.current?.getCurrentTime()
@@ -144,5 +115,4 @@ export default function VideoPage() {
         </div>
     );
 }
-
 
