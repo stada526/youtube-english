@@ -33,6 +33,7 @@ export const Youtube = forwardRef<YouTubePlayer, Props>(function YoutubePlayer (
                 }
                 intervalId.current = setInterval(async () => {
                     const currTime = await e.target.getCurrentTime()
+                    // console.log(currTime)
                     props.onInterval(currTime)
                 }, 100)
             }}
