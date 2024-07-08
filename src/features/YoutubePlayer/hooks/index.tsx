@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { YouTubePlayer } from "react-youtube"
 import { Youtube } from "../components";
 
@@ -6,13 +6,16 @@ type IntervalFn = (currentTime: number) => void
 
 type UseYoutubePlayer = {
     component: () => JSX.Element
+    playbackRate: number
     play: (seconds: number) => Promise<void>
     pause: () => Promise<void>
+    setPlaybackRateBy: (diff: number) => Promise<void>
 }
 
 
 export const useYoutubePlayer = (videoId: string, intervalFn: IntervalFn): UseYoutubePlayer => {
     const playerRef = useRef<YouTubePlayer | null>(null);
+    const [playbackRate, setPlaybackRate] = useState(1);
 
     const play = useCallback(async (seconds: number) => {
         if (playerRef.current) {
@@ -23,7 +26,15 @@ export const useYoutubePlayer = (videoId: string, intervalFn: IntervalFn): UseYo
 
     const pause = useCallback(async () => {
         if (playerRef.current) {
-            await playerRef.current.pauseVideo
+            await playerRef.current.pauseVideo();
+        }
+    }, [])
+
+    const setPlaybackRateBy = useCallback(async(diff: number) => {
+        if (playerRef.current) {
+            const rate = await playerRef.current.getPlaybackRate() + diff;
+            await playerRef.current.setPlaybackRate(rate);
+            setPlaybackRate(rate)
         }
     }, [])
 
@@ -37,7 +48,9 @@ export const useYoutubePlayer = (videoId: string, intervalFn: IntervalFn): UseYo
 
     return {
         component: youtubePlayer,
+        playbackRate,
         play,
-        pause
+        pause,
+        setPlaybackRateBy
     }
 }

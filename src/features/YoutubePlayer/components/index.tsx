@@ -35,7 +35,7 @@ export const Youtube = forwardRef<YouTubePlayer, Props>(function YoutubePlayer (
                     const currTime = await e.target.getCurrentTime()
                     // console.log(currTime)
                     props.onInterval(currTime)
-                }, 100)
+                }, 50)
             }}
             onPause={(e) => {
                 if (!intervalId.current) {

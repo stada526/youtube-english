@@ -1,3 +1,5 @@
+import { Option, Some, None } from "@/types/option"
+
 export type Segment = Readonly<{
     start: number
     end: number
@@ -14,7 +16,7 @@ export type Word = Readonly<{
 export const findSegmentIndexAt = (segments: Segment[], seconds: number): Option<number> => {
     for (let i=0; i<segments.length; i++) {
         const segment = segments[i]
-        if (segment.start <= seconds && seconds <= segment.end) {
+        if (segment.start <= seconds && seconds < segment.end) {
             return Some(i)
         }
     }
@@ -24,23 +26,9 @@ export const findSegmentIndexAt = (segments: Segment[], seconds: number): Option
 export const findWordIndexAt = (words: Word[], seconds: number): Option<number> => {
     for (let i=0; i<words.length; i++) {
         const word = words[i]
-        if (word.start <= seconds && seconds <= word.end) {
+        if (word.start <= seconds && seconds < word.end) {
             return Some(i)
         }
     }
     return None()
-}
-
-const Some = <T>(value: T): Some<T> => ({ type: "some", value })
-const None = (): None => ({ type: "none" })
-
-type Option<T> = Some<T> | None
-
-type Some<T> = {
-    type: "some"
-    value: T
-}
-
-type None = {
-    type: "none"
 }
