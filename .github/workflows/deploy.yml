@@ -33,3 +33,6 @@ jobs:
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set default.region us-east-1
           aws s3 sync ./out/ s3://youtube-english
+
+      - name: Clear cache
+        run: aws cloudfront create-invalidation --distribution-id EOJ8VPLS44Z9C --paths "/*"
