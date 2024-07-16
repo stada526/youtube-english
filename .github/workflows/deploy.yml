@@ -1,7 +1,7 @@
 name: Auto Deploy
 
 env:
-  NEXT_PUBLIC_API_URL: "http://ec2-44-207-5-154.compute-1.amazonaws.com"
+  NEXT_PUBLIC_API_URL: "https://linopandemic.com"
 
 on:
   push:
