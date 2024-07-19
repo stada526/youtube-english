@@ -20,8 +20,8 @@ export const Youtube = forwardRef<YouTubePlayer, Props>(function YoutubePlayer (
     return (
         <YouTube videoId={props.videoId}
             opts={{
-                height: '390',
-                width: '640',
+                height: '500px',
+                width: '100%',
                 playerVars: {
                     autoplay: 0
                 }

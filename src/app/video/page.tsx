@@ -2,12 +2,11 @@
 import { Caption } from '@/features/Caption/components/Caption';
 import { Segment } from '@/features/Caption/domain';
 import { useCaption } from '@/features/Caption/hooks';
-import { sample } from '@/features/Caption/sample';
 import { useYoutubePlayer } from '@/features/YoutubePlayer/hooks';
 import { videoClient } from '@/http-clients/video-client';
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense, useEffect, useState } from 'react';
-import { IoPlayBackSharp, IoPlayForwardSharp } from 'react-icons/io5';
+import { PlayerController } from './_components/PlayerController';
 
 type Video = {
     id: string
@@ -30,7 +29,7 @@ export default function VideoPage() {
 const Main= () => {
     const [video, setVideo] = useState<Video | null>(null)
     const searchParams = useSearchParams()
-    const videoId = searchParams.get("videoId") // UNP03fDSj1U
+    const videoId = searchParams.get("videoId")
 
     useEffect(() => {
         if (videoId === null) {
@@ -57,7 +56,12 @@ type VideoWithCaptionProps = {
 }
 
 const VideoWithCaption = (props: VideoWithCaptionProps) => {
-    const { segmentIndex, wordIndex, focusWordAtSeconds, focusWordAtIndices } = useCaption(props.video.caption)
+    const {
+        segmentIndex,
+        wordIndex,
+        focusWordAtSeconds,
+        focusWordAtIndices
+    } = useCaption(props.video.caption)
 
     const YoutubePlayer = useYoutubePlayer(
         props.video.youtubeVideoId,
@@ -69,16 +73,14 @@ const VideoWithCaption = (props: VideoWithCaptionProps) => {
         <div>
             {YoutubePlayer.component()}
         </div>
-        <div>
-            <button onClick={() => YoutubePlayer.setPlaybackRateBy(-0.25)}>
-                <IoPlayBackSharp />
-            </button>
-            <span>{YoutubePlayer.playbackRate}</span>
-            <button onClick={() => YoutubePlayer.setPlaybackRateBy(0.25)}>
-                <IoPlayForwardSharp />
-            </button>
+        <div className='flex justify-center mt-4'>
+            <PlayerController
+                playbackRate={YoutubePlayer.playbackRate}
+                onFastBackward={() => YoutubePlayer.setPlaybackRateBy(-0.25)}
+                onFastForward={() => YoutubePlayer.setPlaybackRateBy(0.25)}
+            />
         </div>
-        <div className='flex-1 min-h-0'>
+        <div className='flex-1 min-h-0 mt-4'>
             <Caption
                 segments={props.video.caption}
                 segmentIndex={segmentIndex}
@@ -92,3 +94,4 @@ const VideoWithCaption = (props: VideoWithCaptionProps) => {
     </div>
     )
 }
+

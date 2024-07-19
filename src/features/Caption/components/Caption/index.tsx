@@ -53,6 +53,7 @@ type PositionTrackerProps<T> = {
 const PositionTracker = <T,>(props: PositionTrackerProps<T>) => {
     const { children, enabled, onTrack } = props
     const ref = useRef<HTMLDivElement>(null)
+
     useEffect(() => {
         if (!enabled || !ref.current) {
             return;
@@ -63,6 +64,7 @@ const PositionTracker = <T,>(props: PositionTrackerProps<T>) => {
             bottom: rect.bottom
         })
     }, [enabled, onTrack])
+
     return (
         <div ref={ref}>
             {children}
@@ -80,7 +82,7 @@ type SegmentProps = {
 
 const SegmentBox = (props: SegmentProps) => {
     return (
-        <div className="border border-solid border-gray-400 px-5 py-2 space-x-2">
+        <div className="border border-solid border-gray-400 px-5 py-2">
             {props.words.map((word, index) => (
                 <WordItem
                     key={index}
@@ -105,6 +107,7 @@ const WordItem = (props: WordProps) => {
     return (
         <button
             style={{ backgroundColor: bgColor }}
+            className="px-0.5"
             onClick={props.onClick}
         >
             {props.word}

@@ -26,7 +26,7 @@ export default function VideoListPage() {
 
     return (
         <div className='h-screen'>
-            <h1>English Learning with Youtube</h1>
+            <h1 className='text-xl'>English Learning with Youtube</h1>
             <ul>
                 {videoList.map(x => (
                     <li key={x.id}>
